@@ -43,6 +43,38 @@
     color: #88aaff;
     text-align: center;
   }
+  .mobile-controls {
+    display: none;
+    position: fixed;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    justify-content: space-between;
+    padding: 0 10px;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .mobile-controls button {
+    pointer-events: auto;
+    width: 60px;
+    height: 60px;
+    background: rgba(30,40,80,0.7);
+    border: 2px solid #6688cc;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    touch-action: none;
+    user-select: none;
+  }
+  .mobile-controls button:active {
+    background: rgba(80,120,200,0.9);
+  }
+  @media (max-width: 800px) {
+    .mobile-controls { display: flex; }
+    #controls { display: none; }
+    canvas { max-width: 100vw; height: auto; }
+  }
   .key {
     background: #223;
     border: 1px solid #446;
@@ -64,6 +96,17 @@
     <span class="key">R</span> เริ่มใหม่
   </div>
 </div>
+<div class="mobile-controls">
+  <div>
+    <button id="btn-left">◀</button>
+    <button id="btn-right">▶</button>
+  </div>
+  <div>
+    <button id="btn-jump">↑</button>
+    <button id="btn-z">1</button>
+    <button id="btn-x">3</button>
+  </div>
+</div>
 
 <script>
 const canvas = document.getElementById('game');
@@ -75,8 +118,8 @@ const BHP_SPAN = document.getElementById('bhp');
 
 // Constants
 const GRAVITY = 0.45;
-const JUMP_FORCE = -8.2;
-const MOVE_SPEED = 1.75;          // เร็วขึ้นนิดให้ควบคุมง่าย
+const JUMP_FORCE = -8.6;
+const MOVE_SPEED = 1.85;
 const SINGLE_COOLDOWN = 8;
 const TRIPLE_COOLDOWN = 22;
 const INVINCIBLE_TIME = 50;
@@ -117,12 +160,12 @@ function buildLevel() {
 
   // Main ground with more gaps
   for (let x = 0; x < STAGE_END - 200; x += 32) {
-    if ((x > 230 && x < 300) ||
-        (x > 560 && x < 640) ||
-        (x > 940 && x < 1020) ||
-        (x > 1400 && x < 1480) ||
-        (x > 1880 && x < 1960) ||
-        (x > 2280 && x < 2350)) continue;
+    if ((x > 240 && x < 290) ||
+        (x > 580 && x < 630) ||
+        (x > 960 && x < 1010) ||
+        (x > 1420 && x < 1470) ||
+        (x > 1900 && x < 1950) ||
+        (x > 2300 && x < 2340)) continue;
     platforms.push({ x, y: groundY, w: 32, h: 30 });
   }
 
@@ -218,6 +261,25 @@ window.addEventListener('keydown', e => {
 window.addEventListener('keyup', e => {
   keys[e.key.toLowerCase()] = false;
 });
+
+// Mobile touch controls
+function bindTouch(btnId, keyName) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  const down = (e) => { e.preventDefault(); keys[keyName] = true; };
+  const up = (e) => { e.preventDefault(); keys[keyName] = false; };
+  btn.addEventListener('touchstart', down, {passive:false});
+  btn.addEventListener('touchend', up, {passive:false});
+  btn.addEventListener('touchcancel', up, {passive:false});
+  btn.addEventListener('mousedown', down);
+  btn.addEventListener('mouseup', up);
+  btn.addEventListener('mouseleave', up);
+}
+bindTouch('btn-left', 'arrowleft');
+bindTouch('btn-right', 'arrowright');
+bindTouch('btn-jump', ' ');
+bindTouch('btn-z', 'z');
+bindTouch('btn-x', 'x');
 
 function shootSingle() {
   if (player.singleTimer > 0 || gameOver || gameWon) return;
