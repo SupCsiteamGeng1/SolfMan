@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>SolfMan - Beta 0.013</title>
+<title>SolfMan - Beta 0.014</title>
 <style>
   body {
     margin: 0;
@@ -690,16 +690,28 @@ function draw() {
     const isMoving = Math.abs(player.vx) > 0.1;
     const isJumping = !player.onGround;
     const isAttacking = player.singleTimer > 0 || player.tripleTimer > 0;
-    const frame = Math.floor(Date.now() / 33) % 8;
 
-    let sprite = sprites.idle[frame % sprites.idle.length];
+    // Separate animation speeds for smoother feel
+    let animSpeed = 180; // idle slower
+    let frameCount = 4;
+    let spriteList = sprites.idle;
+
     if (isAttacking) {
-      sprite = sprites.attack[Math.floor(Date.now() / 33) % sprites.attack.length];
+      animSpeed = 80;
+      frameCount = Math.min(4, sprites.attack.length);
+      spriteList = sprites.attack;
     } else if (isJumping) {
-      sprite = sprites.jump[Math.floor(Date.now() / 33) % sprites.jump.length];
+      animSpeed = 100;
+      frameCount = Math.min(4, sprites.jump.length);
+      spriteList = sprites.jump;
     } else if (isMoving) {
-      sprite = sprites.run[frame % sprites.run.length];
+      animSpeed = 90;
+      frameCount = Math.min(6, sprites.run.length);
+      spriteList = sprites.run;
     }
+
+    const frame = Math.floor(Date.now() / animSpeed) % frameCount;
+    const sprite = spriteList[frame] || spriteList[0];
 
     if (sprite && sprite.complete) {
       ctx.save();
@@ -748,7 +760,7 @@ function draw() {
   ctx.fillText('SOLFMAN', 10, 16);
   ctx.fillStyle = '#88aaff';
   ctx.font = '6px monospace';
-  ctx.fillText('Beta 0.013', 140, 16);
+  ctx.fillText('Beta 0.014', 140, 16);
 
   // Weapon indicators
   ctx.fillStyle = player.singleTimer <= 0 ? '#ffff88' : '#555';
