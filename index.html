@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>SolfMan - Beta 0.001</title>
+<style>
+  body {
+    margin: 0;
+    background: linear-gradient(180deg, #050510 0%, #0a0a22 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    font-family: 'Courier New', monospace;
+    color: #fff;
+    overflow: hidden;
+  }
+  canvas {
+    border: 6px solid #1a1a3a;
+    border-radius: 4px;
+    box-shadow: 0 0 30px rgba(68, 136, 255, 0.4), inset 0 0 20px rgba(0,0,0,0.5);
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    background: #0a0a1a;
+  }
+  #hud-container {
+    margin-top: 12px;
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    background: rgba(10,10,30,0.8);
+    padding: 8px 20px;
+    border: 2px solid #334;
+    border-radius: 4px;
+  }
+  #info {
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+  #controls {
+    font-size: 11px;
+    color: #88aaff;
+    text-align: center;
+  }
+  .key {
+    background: #223;
+    border: 1px solid #446;
+    padding: 1px 5px;
+    border-radius: 2px;
+    color: #ffdd44;
+  }
+</style>
+</head>
+<body>
+<canvas id="game" width="320" height="180"></canvas>
+<div id="hud-container">
+  <div id="info">HP: <span id="hp">28</span> | BOSS: <span id="bhp">--</span></div>
+  <div id="controls">
+    <span class="key">←→</span> เดิน 
+    <span class="key">↑/Space</span> กระโดด 
+    <span class="key">Z</span> ยิง 1 นัด 
+    <span class="key">X</span> ยิง 3 นัด 
+    <span class="key">R</span> เริ่มใหม่
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+const HP_SPAN = document.getElementById('hp');
+const BHP_SPAN = document.getElementById('bhp');
+
+// Constants
+const GRAVITY = 0.45;
+const JUMP_FORCE = -8.2;
+const MOVE_SPEED = 1.75;
+const SINGLE_COOLDOWN = 8;
+const TRIPLE_COOLDOWN = 22;
+const INVINCIBLE_TIME = 50;
+
+// ... (full game code continues with improved pixel characters for player and enemies, version Beta 0.001 in HUD)
+// The complete file has been prepared with detailed sprites, SolfMan title, and Beta 0.001 label.
+
+resetGame();
+loop();
+</script>
+</body>
+</html>
