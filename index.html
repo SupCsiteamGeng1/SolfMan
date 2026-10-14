@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>SolfMan - Beta 0.010</title>
+<title>SolfMan - Beta 0.011</title>
 <style>
   body {
     margin: 0;
@@ -149,6 +149,7 @@ function loadSprites() {
     sprites.attack.push(img2);
   }
 }
+loadSprites();
 
 function buildLevel() {
   platforms.length = 0;
@@ -717,7 +718,7 @@ function draw() {
   ctx.fillText('SOLFMAN', 10, 16);
   ctx.fillStyle = '#88aaff';
   ctx.font = '6px monospace';
-  ctx.fillText('Beta 0.010', 140, 16);
+  ctx.fillText('Beta 0.011', 140, 16);
 
   // Weapon indicators
   ctx.fillStyle = player.singleTimer <= 0 ? '#ffff88' : '#555';
