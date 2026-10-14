@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>SolfMan - Beta 0.014</title>
+<title>SolfMan - Beta 0.015</title>
 <style>
   body {
     margin: 0;
@@ -124,33 +124,6 @@ const SINGLE_COOLDOWN = 8;
 const TRIPLE_COOLDOWN = 22;
 const INVINCIBLE_TIME = 50;
 
-// Sprite loading
-const sprites = {
-  idle: [],
-  run: [],
-  jump: [],
-  attack: []
-};
-function loadSprites() {
-  for (let i = 0; i < 8; i++) {
-    const img = new Image();
-    img.src = 'sprites/idle_' + i + '.png';
-    sprites.idle.push(img);
-    const img2 = new Image();
-    img2.src = 'sprites/run_' + i + '.png';
-    sprites.run.push(img2);
-  }
-  for (let i = 0; i < 6; i++) {
-    const img = new Image();
-    img.src = 'sprites/jump_' + i + '.png';
-    sprites.jump.push(img);
-    const img2 = new Image();
-    img2.src = 'sprites/attack_' + i + '.png';
-    sprites.attack.push(img2);
-  }
-}
-loadSprites();
-
 // Game state
 let keys = {};
 let bullets = [];
@@ -165,8 +138,8 @@ const player = {
   y: 100,
   vx: 0,
   vy: 0,
-  w: 32,
-  h: 40,
+  w: 16,
+  h: 24,
   onGround: false,
   facing: 1,
   health: 28,
@@ -685,48 +658,73 @@ function draw() {
     }
   }
 
-  // Player — Sprite based from reference sheet
+  // Player — Procedural Miko style (smooth)
   if (player.invincible % 5 < 3 || player.invincible === 0) {
+    const face = player.facing;
     const isMoving = Math.abs(player.vx) > 0.1;
     const isJumping = !player.onGround;
     const isAttacking = player.singleTimer > 0 || player.tripleTimer > 0;
+    const anim = Math.floor(Date.now() / 120) % 2;
 
-    // Separate animation speeds for smoother feel
-    let animSpeed = 180; // idle slower
-    let frameCount = 4;
-    let spriteList = sprites.idle;
+    // Hair
+    ctx.fillStyle = '#1a0a0a';
+    ctx.fillRect(player.x + 2, player.y, player.w - 4, 10);
+    ctx.fillRect(player.x + 1, player.y + 3, player.w - 2, 6);
+    // Red bow
+    ctx.fillStyle = '#ee1133';
+    ctx.fillRect(player.x + (face > 0 ? player.w - 5 : 0), player.y, 5, 4);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(player.x + (face > 0 ? player.w - 3 : 2), player.y + 1, 1, 2);
 
-    if (isAttacking) {
-      animSpeed = 80;
-      frameCount = Math.min(4, sprites.attack.length);
-      spriteList = sprites.attack;
-    } else if (isJumping) {
-      animSpeed = 100;
-      frameCount = Math.min(4, sprites.jump.length);
-      spriteList = sprites.jump;
-    } else if (isMoving) {
-      animSpeed = 90;
-      frameCount = Math.min(6, sprites.run.length);
-      spriteList = sprites.run;
-    }
+    // Face
+    ctx.fillStyle = '#ffe0cc';
+    ctx.fillRect(player.x + 4, player.y + 4, 8, 6);
+    ctx.fillStyle = '#000';
+    ctx.fillRect(player.x + 5, player.y + 6, 1, 2);
+    ctx.fillRect(player.x + 9, player.y + 6, 1, 2);
+    ctx.fillStyle = '#ff99aa';
+    ctx.fillRect(player.x + 4, player.y + 8, 2, 1);
+    ctx.fillRect(player.x + 10, player.y + 8, 2, 1);
 
-    const frame = Math.floor(Date.now() / animSpeed) % frameCount;
-    const sprite = spriteList[frame] || spriteList[0];
+    // White top
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(player.x + 2, player.y + 10, player.w - 4, 5);
+    ctx.fillStyle = '#cc1122';
+    ctx.fillRect(player.x + 3, player.y + 14, player.w - 6, 2);
 
-    if (sprite && sprite.complete) {
-      ctx.save();
-      if (player.facing < 0) {
-        ctx.translate(player.x + player.w, player.y);
-        ctx.scale(-1, 1);
-        ctx.drawImage(sprite, 0, 0, player.w, player.h);
-      } else {
-        ctx.drawImage(sprite, player.x, player.y, player.w, player.h);
-      }
-      ctx.restore();
+    // Red hakama
+    ctx.fillStyle = '#dd2233';
+    ctx.fillRect(player.x + 1, player.y + 16, player.w - 2, 5);
+    ctx.fillStyle = '#ff3344';
+    ctx.fillRect(player.x + 3, player.y + 17, player.w - 6, 3);
+
+    // Legs
+    const legOff = isMoving ? anim : 0;
+    ctx.fillStyle = '#ffe0cc';
+    if (isJumping) {
+      ctx.fillRect(player.x + 3, player.y + player.h - 4, 4, 3);
+      ctx.fillRect(player.x + player.w - 7, player.y + player.h - 4, 4, 3);
     } else {
-      // Fallback simple draw if sprites not loaded
-      ctx.fillStyle = '#dd2233';
-      ctx.fillRect(player.x, player.y, player.w, player.h);
+      ctx.fillRect(player.x + 3, player.y + player.h - 6 + (legOff ? 1 : 0), 4, 5);
+      ctx.fillRect(player.x + player.w - 7, player.y + player.h - 6 + (legOff ? 0 : 1), 4, 5);
+    }
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(player.x + 3, player.y + player.h - 2, 4, 2);
+    ctx.fillRect(player.x + player.w - 7, player.y + player.h - 2, 4, 2);
+
+    // Arm / attack
+    if (isAttacking) {
+      ctx.fillStyle = '#ffe0cc';
+      const armX = face > 0 ? player.x + player.w - 2 : player.x - 3;
+      ctx.fillRect(armX, player.y + 12, 5, 3);
+      ctx.fillStyle = '#ff2244';
+      ctx.fillRect(armX + (face > 0 ? 4 : -3), player.y + 11, 4, 3);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(armX + (face > 0 ? 5 : -2), player.y + 12, 2, 1);
+    } else {
+      ctx.fillStyle = '#ffe0cc';
+      const armX = face > 0 ? player.x + player.w - 2 : player.x - 1;
+      ctx.fillRect(armX, player.y + 12, 3, 4);
     }
   }
 
@@ -760,7 +758,7 @@ function draw() {
   ctx.fillText('SOLFMAN', 10, 16);
   ctx.fillStyle = '#88aaff';
   ctx.font = '6px monospace';
-  ctx.fillText('Beta 0.014', 140, 16);
+  ctx.fillText('Beta 0.015', 140, 16);
 
   // Weapon indicators
   ctx.fillStyle = player.singleTimer <= 0 ? '#ffff88' : '#555';
