@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>SolfMan - Beta 0.009</title>
+<title>SolfMan - Beta 0.010</title>
 <style>
   body {
     margin: 0;
@@ -132,8 +132,22 @@ const sprites = {
   attack: []
 };
 function loadSprites() {
-  // Sprites disabled for stability - using procedural draw
-  console.log("Using procedural player");
+  for (let i = 0; i < 8; i++) {
+    const img = new Image();
+    img.src = 'sprites/idle_' + i + '.png';
+    sprites.idle.push(img);
+    const img2 = new Image();
+    img2.src = 'sprites/run_' + i + '.png';
+    sprites.run.push(img2);
+  }
+  for (let i = 0; i < 6; i++) {
+    const img = new Image();
+    img.src = 'sprites/jump_' + i + '.png';
+    sprites.jump.push(img);
+    const img2 = new Image();
+    img2.src = 'sprites/attack_' + i + '.png';
+    sprites.attack.push(img2);
+  }
 }
 
 function buildLevel() {
@@ -703,7 +717,7 @@ function draw() {
   ctx.fillText('SOLFMAN', 10, 16);
   ctx.fillStyle = '#88aaff';
   ctx.font = '6px monospace';
-  ctx.fillText('Beta 0.009', 140, 16);
+  ctx.fillText('Beta 0.010', 140, 16);
 
   // Weapon indicators
   ctx.fillStyle = player.singleTimer <= 0 ? '#ffff88' : '#555';
