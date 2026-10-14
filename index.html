@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>SolfMan - Beta 0.002</title>
+<title>SolfMan - Beta 0.003</title>
 <style>
   body {
     margin: 0;
@@ -640,60 +640,81 @@ function draw() {
     }
   }
 
-  // Bullets
+  // Bullets — ยันต์สำหรับผู้เล่น
   for (const b of bullets) {
     if (b.fromPlayer) {
-      ctx.fillStyle = b.type === 'triple' ? '#ffee66' : '#ffff88';
+      // ยันต์สีแดง
+      ctx.fillStyle = '#ff2244';
+      ctx.fillRect(b.x, b.y, b.w, b.h);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(b.x + 1, b.y + 1, b.w - 2, b.h - 2);
+      ctx.fillStyle = '#ff4466';
+      ctx.fillRect(b.x + 2, b.y + 1, 1, b.h - 2);
     } else {
       ctx.fillStyle = '#ff4455';
+      ctx.fillRect(b.x, b.y, b.w, b.h);
     }
-    ctx.fillRect(b.x, b.y, b.w, b.h);
   }
 
-  // Player — Mega Man style ละเอียดขึ้น
+  // Player — Miko Girl style
   if (player.invincible % 5 < 3 || player.invincible === 0) {
     const face = player.facing;
-    // Body
-    ctx.fillStyle = '#1a66dd';
-    ctx.fillRect(player.x + 1, player.y + 8, player.w - 2, 10);
-    ctx.fillStyle = '#2288ff';
-    ctx.fillRect(player.x + 2, player.y + 9, player.w - 4, 8);
-    // Chest plate highlight
-    ctx.fillStyle = '#66ccff';
-    ctx.fillRect(player.x + 5, player.y + 11, 4, 2);
+    const isMoving = Math.abs(player.vx) > 0.1;
+    const isJumping = !player.onGround;
+    const anim = Math.floor(Date.now() / 120) % 2;
 
-    // Helmet
-    ctx.fillStyle = '#ffcc22';
-    ctx.fillRect(player.x + 1, player.y, player.w - 2, 10);
-    ctx.fillStyle = '#ffee55';
-    ctx.fillRect(player.x + 2, player.y + 1, player.w - 4, 6);
-    // Visor
-    ctx.fillStyle = '#55ccff';
-    ctx.fillRect(player.x + 3, player.y + 3, 8, 4);
-    ctx.fillStyle = '#aaddff';
-    ctx.fillRect(player.x + 4, player.y + 4, 6, 2);
-    // Helmet ear
-    ctx.fillStyle = '#eeaa11';
-    ctx.fillRect(player.x + (face > 0 ? player.w - 3 : 0), player.y + 3, 3, 4);
+    // Hair (black)
+    ctx.fillStyle = '#1a0a0a';
+    ctx.fillRect(player.x + 2, player.y, player.w - 4, 8);
+    ctx.fillRect(player.x + 1, player.y + 2, player.w - 2, 6);
+    // Red bow
+    ctx.fillStyle = '#cc1122';
+    ctx.fillRect(player.x + (face > 0 ? player.w - 4 : 0), player.y + 1, 4, 3);
+    ctx.fillRect(player.x + (face > 0 ? player.w - 3 : 1), player.y, 2, 2);
 
-    // Arm + Cannon
-    ctx.fillStyle = '#1a66dd';
-    const armBase = face > 0 ? player.x + player.w - 2 : player.x - 2;
-    ctx.fillRect(armBase, player.y + 10, 4, 6);
-    ctx.fillStyle = '#ffcc22';
-    const cannonX = face > 0 ? player.x + player.w - 1 : player.x - 6;
-    ctx.fillRect(cannonX, player.y + 11, 7, 4);
-    ctx.fillStyle = '#ffee55';
-    ctx.fillRect(cannonX + (face > 0 ? 4 : 0), player.y + 12, 3, 2);
+    // Face
+    ctx.fillStyle = '#ffddcc';
+    ctx.fillRect(player.x + 4, player.y + 3, 6, 5);
+    // Eyes
+    ctx.fillStyle = '#000';
+    ctx.fillRect(player.x + 5, player.y + 4, 1, 2);
+    ctx.fillRect(player.x + 8, player.y + 4, 1, 2);
 
-    // Legs + boots
-    const legAnim = Math.floor(Date.now() / 140) % 2;
-    ctx.fillStyle = '#1144aa';
-    ctx.fillRect(player.x + 2, player.y + player.h - 7 + (legAnim ? 1 : 0), 4, 7);
-    ctx.fillRect(player.x + player.w - 6, player.y + player.h - 7 + (legAnim ? 0 : 1), 4, 7);
-    ctx.fillStyle = '#ffcc22';
-    ctx.fillRect(player.x + 2, player.y + player.h - 3, 4, 3);
-    ctx.fillRect(player.x + player.w - 6, player.y + player.h - 3, 4, 3);
+    // White top
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(player.x + 2, player.y + 8, player.w - 4, 6);
+    ctx.fillStyle = '#ffeeee';
+    ctx.fillRect(player.x + 3, player.y + 9, player.w - 6, 4);
+    // Red collar
+    ctx.fillStyle = '#cc1122';
+    ctx.fillRect(player.x + 4, player.y + 8, 6, 2);
+
+    // Red skirt / hakama
+    ctx.fillStyle = '#dd2233';
+    ctx.fillRect(player.x + 1, player.y + 13, player.w - 2, 6);
+    ctx.fillStyle = '#ff4455';
+    ctx.fillRect(player.x + 2, player.y + 14, player.w - 4, 4);
+
+    // Legs
+    const legOff = isMoving ? anim : 0;
+    ctx.fillStyle = '#ffddcc';
+    ctx.fillRect(player.x + 3, player.y + player.h - 6 + (legOff ? 1 : 0), 3, 5);
+    ctx.fillRect(player.x + player.w - 6, player.y + player.h - 6 + (legOff ? 0 : 1), 3, 5);
+    // Red shoes
+    ctx.fillStyle = '#aa1122';
+    ctx.fillRect(player.x + 3, player.y + player.h - 2, 3, 2);
+    ctx.fillRect(player.x + player.w - 6, player.y + player.h - 2, 3, 2);
+
+    // Arm / staff pose
+    if (isJumping) {
+      // Jump pose - arms up a bit
+      ctx.fillStyle = '#ffddcc';
+      ctx.fillRect(player.x + (face > 0 ? player.w - 2 : 0), player.y + 8, 3, 4);
+    } else {
+      ctx.fillStyle = '#ffddcc';
+      const armX = face > 0 ? player.x + player.w - 2 : player.x - 1;
+      ctx.fillRect(armX, player.y + 10, 3, 4);
+    }
   }
 
   // Particles
@@ -726,7 +747,7 @@ function draw() {
   ctx.fillText('SOLFMAN', 10, 16);
   ctx.fillStyle = '#88aaff';
   ctx.font = '6px monospace';
-  ctx.fillText('Beta 0.002', 140, 16);
+  ctx.fillText('Beta 0.003', 140, 16);
 
   // Weapon indicators
   ctx.fillStyle = player.singleTimer <= 0 ? '#ffff88' : '#555';
