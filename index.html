@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<title>SolfMan - Beta 0.001</title>
+<title>SolfMan - Beta 0.002</title>
 <style>
   body {
     margin: 0;
@@ -262,24 +262,26 @@ window.addEventListener('keyup', e => {
   keys[e.key.toLowerCase()] = false;
 });
 
-// Mobile touch controls
+// Mobile touch controls (improved)
 function bindTouch(btnId, keyName) {
   const btn = document.getElementById(btnId);
   if (!btn) return;
-  const down = (e) => { e.preventDefault(); keys[keyName] = true; };
-  const up = (e) => { e.preventDefault(); keys[keyName] = false; };
-  btn.addEventListener('touchstart', down, {passive:false});
-  btn.addEventListener('touchend', up, {passive:false});
-  btn.addEventListener('touchcancel', up, {passive:false});
-  btn.addEventListener('mousedown', down);
-  btn.addEventListener('mouseup', up);
-  btn.addEventListener('mouseleave', up);
+  const setKey = (val) => { keys[keyName] = val; };
+  btn.addEventListener('touchstart', (e) => { e.preventDefault(); e.stopPropagation(); setKey(true); }, {passive: false});
+  btn.addEventListener('touchend', (e) => { e.preventDefault(); e.stopPropagation(); setKey(false); }, {passive: false});
+  btn.addEventListener('touchcancel', (e) => { e.preventDefault(); setKey(false); }, {passive: false});
+  btn.addEventListener('pointerdown', (e) => { e.preventDefault(); setKey(true); });
+  btn.addEventListener('pointerup', (e) => { e.preventDefault(); setKey(false); });
+  btn.addEventListener('pointerleave', (e) => { setKey(false); });
 }
 bindTouch('btn-left', 'arrowleft');
 bindTouch('btn-right', 'arrowright');
 bindTouch('btn-jump', ' ');
 bindTouch('btn-z', 'z');
 bindTouch('btn-x', 'x');
+
+// Prevent page scroll on mobile
+document.body.addEventListener('touchmove', (e) => { e.preventDefault(); }, {passive: false});
 
 function shootSingle() {
   if (player.singleTimer > 0 || gameOver || gameWon) return;
@@ -724,7 +726,7 @@ function draw() {
   ctx.fillText('SOLFMAN', 10, 16);
   ctx.fillStyle = '#88aaff';
   ctx.font = '6px monospace';
-  ctx.fillText('Beta 0.001', 140, 16);
+  ctx.fillText('Beta 0.002', 140, 16);
 
   // Weapon indicators
   ctx.fillStyle = player.singleTimer <= 0 ? '#ffff88' : '#555';
